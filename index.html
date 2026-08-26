@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="theme-color" content="#0b3c5d">
+  <meta name="description" content="Bản đồ hành chính xã Vĩnh Thịnh, tỉnh Gia Lai">
+  <title>Bản đồ xã Vĩnh Thịnh · Gia Lai</title>
+
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/Vietflexmap/VN@6144d565fcf236727577ab3c4471bbe49f86892f/dist/vietflex.css">
+  <script src="https://cdn.jsdelivr.net/gh/Vietflexmap/VN@6144d565fcf236727577ab3c4471bbe49f86892f/dist/vietflex.js"></script>
+
+  <style>
+    :root{
+      --panel:rgba(255,255,255,.96);--ink:#16344a;--muted:#637f91;--line:#d6e2ea;
+      --blue:#0d47a1;--pink:#ff5fa2;--red:#d7191c;--yellow:#ffd54f;
+      --shadow:0 12px 34px rgba(18,47,68,.18)
+    }
+    *{box-sizing:border-box}
+    html,body,#map{width:100%;height:100%;margin:0;overflow:hidden}
+    body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#dce7ef;color:var(--ink)}
+    #map{position:absolute;inset:0;background:#dce7ef}
+    .titlebar{position:absolute;z-index:1000;left:14px;top:14px;width:min(410px,calc(100vw - 28px));background:var(--panel);border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow);padding:13px 14px 12px;backdrop-filter:blur(8px)}
+    .eyebrow{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#52748a;margin-bottom:4px}
+    h1{font-size:19px;line-height:1.15;margin:0;color:#11364f}
+    .subtitle{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.45}
+    .quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .chip{border:1px solid #c9dbe6;background:#fff;color:#294e66;border-radius:999px;padding:6px 9px;font-size:10.5px;font-weight:700;cursor:pointer}
+    .chip:hover{border-color:#7aa9c8;color:#0d47a1}
+    .chip.ward{border-color:rgba(215,25,28,.35);background:rgba(255,213,79,.26);color:#a61d20}
+    .chip.province{border-color:rgba(13,71,161,.3);background:rgba(255,95,162,.10);color:#0d47a1}
+    .toolbar{position:absolute;z-index:1000;right:14px;top:14px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;max-width:min(560px,calc(100vw - 460px))}
+    .tool-btn{width:42px;height:42px;border:1px solid rgba(197,213,226,.96);border-radius:12px;background:var(--panel);color:#34566f;box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer;position:relative;transition:.18s ease;padding:0}
+    .tool-btn:hover{transform:translateY(-1px);border-color:#79aedd;color:var(--blue)}
+    .tool-btn.active{background:linear-gradient(135deg,#0a4c9f,#1677d2);border-color:transparent;color:#fff}
+    .tool-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+    .tool-btn[data-tip]::after{content:attr(data-tip);position:absolute;top:48px;right:0;padding:5px 7px;background:#142f44;color:#fff;font-size:10px;white-space:nowrap;border-radius:6px;opacity:0;pointer-events:none;transform:translateY(-3px);transition:.15s;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+    .tool-btn[data-tip]:hover::after{opacity:1;transform:none}
+    .info{position:absolute;z-index:950;right:14px;bottom:14px;width:min(370px,calc(100vw - 28px));background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:12px 13px 11px;backdrop-filter:blur(8px)}
+    .info h2{font-size:14px;margin:0 0 7px}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+    .card{border:1px solid #e0e9ef;border-radius:10px;padding:8px 9px;background:#fff}
+    .card.ward{border-left:4px solid var(--red)}
+    .card.province{border-left:4px solid var(--blue)}
+    .card b{display:block;font-size:11.5px;margin-bottom:4px}
+    .card div{font-size:10.2px;line-height:1.42;color:#587485}
+    .legend{display:flex;gap:9px;align-items:center;flex-wrap:wrap;border-top:1px solid #e7eef3;margin-top:8px;padding-top:8px;font-size:10px;color:#587485}
+    .swatch{width:18px;height:10px;border-radius:3px;display:inline-block;vertical-align:-1px;margin-right:4px}
+    .swatch.ward{background:rgba(255,213,79,.55);border:2px solid var(--red)}
+    .swatch.province{background:rgba(255,95,162,.20);border:2px solid var(--blue)}
+    .coords{position:absolute;z-index:900;left:14px;bottom:14px;background:rgba(255,255,255,.92);border:1px solid var(--line);box-shadow:0 5px 18px rgba(20,48,72,.1);border-radius:8px;padding:6px 9px;color:#567287;font-size:10.5px;pointer-events:none}
+    .toast{position:absolute;z-index:1200;left:50%;bottom:18px;transform:translate(-50%,7px);background:rgba(255,255,255,.97);border:1px solid var(--line);box-shadow:var(--shadow);border-radius:9px;padding:8px 10px;font-size:11px;color:#48677e;opacity:0;pointer-events:none;transition:.2s}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .district-label{background:rgba(255,255,255,.92);border:1px solid rgba(215,25,28,.5);color:#a51619;font-weight:800;font-size:11px;padding:4px 7px;border-radius:8px;box-shadow:0 4px 14px rgba(0,0,0,.14);white-space:nowrap}
+    .leaflet-control-zoom{border:none!important;box-shadow:var(--shadow)!important}
+    .leaflet-control-zoom a{border:1px solid var(--line)!important;color:#34566f!important}
+    .leaflet-control-attribution{font-size:9px!important;background:rgba(255,255,255,.82)!important}
+    .leaflet-top.leaflet-right{top:57px;right:14px}
+    .mode-standard .leaflet-tile-pane img{filter:none}.mode-light .leaflet-tile-pane img{filter:brightness(1.12) saturate(.72) contrast(.92)}.mode-dark .leaflet-tile-pane img{filter:brightness(.58) saturate(.75) contrast(1.14) hue-rotate(8deg)}.mode-satellite .leaflet-tile-pane img{filter:none}
+    @media(max-width:900px){.titlebar{top:62px;width:calc(100vw - 28px)}.toolbar{left:14px;right:14px;top:12px;max-width:none}.info{bottom:46px}.coords{bottom:12px}.leaflet-top.leaflet-right{top:178px;right:14px}}
+    @media(max-width:620px){.info-grid{grid-template-columns:1fr}.info{max-height:38vh;overflow:auto}.tool-btn{width:38px;height:38px;border-radius:10px}.toolbar{gap:5px}.leaflet-top.leaflet-right{top:178px;right:10px}}
+  </style>
+</head>
+<body class="mode-standard">
+<div id="map" aria-label="Bản đồ xã Vĩnh Thịnh, tỉnh Gia Lai"></div>
+<section class="titlebar">
+  <div class="eyebrow">Vietflexmap · Bản đồ hành chính 2026</div>
+  <h1>Xã Vĩnh Thịnh · Tỉnh Gia Lai</h1>
+  <div class="subtitle">Vĩnh Thịnh hình thành từ Vĩnh Hiệp và Vĩnh Thịnh. Ranh giới xã được nhấn <b>vàng–đỏ</b>; ranh giới tỉnh Gia Lai được hiển thị <b>xanh–hồng</b>.</div>
+  <div class="quick">
+    <button class="chip ward" id="fitWard">◎ Xã Vĩnh Thịnh</button>
+    <button class="chip province" id="fitProvince">◫ Tỉnh Gia Lai</button>
+    <button class="chip" id="toggleWard">Ranh xã ✓</button>
+    <button class="chip" id="toggleProvince">Ranh tỉnh ✓</button>
+  </div>
+</section>
+<div class="toolbar" role="toolbar" aria-label="Kiểu bản đồ">
+  <button class="tool-btn active" data-mode="standard" data-tip="Standard" aria-label="Standard"><svg viewBox="0 0 24 24"><path d="M3 6.5 8 4l8 3 5-2.5v13L16 20l-8-3-5 2.5z"/><path d="M8 4v13M16 7v13"/></svg></button>
+  <button class="tool-btn" data-mode="light" data-tip="Light" aria-label="Light"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></button>
+  <button class="tool-btn" data-mode="dark" data-tip="Dark" aria-label="Dark"><svg viewBox="0 0 24 24"><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5 8.5 8.5 0 1 0 20.5 14.5z"/></svg></button>
+  <button class="tool-btn" data-mode="satellite" data-tip="Satellite" aria-label="Satellite"><svg viewBox="0 0 24 24"><path d="m9 9 6 6M7 12l-3 3 5 5 3-3M17 12l3-3-5-5-3 3"/><path d="M14 14c2 2 4 3 7 3M10 10C8 8 7 6 7 3"/></svg></button>
+</div>
+<section class="info">
+  <h2>Thông tin hành chính</h2>
+  <div class="info-grid">
+    <div class="card ward"><b>Xã Vĩnh Thịnh</b><div>Sáp nhập: Vĩnh Hiệp, Vĩnh Thịnh</div><div>UBND: đang cập nhật</div><div>Diện tích: 133,91 km² · Dân số: 10.839</div><div>Mật độ: 80,94 người/km² · Mã xã: 21796</div></div>
+    <div class="card province"><b>Tỉnh Gia Lai</b><div>Sáp nhập: Gia Lai, Bình Định</div><div>135 đơn vị: 25 phường, 110 xã</div><div>UBND: Số 1 Trần Phú, Quy Nhơn, Gia Lai</div><div>21.576,56 km² · 3.583.691 người · Mật độ 166,09</div></div>
+  </div>
+  <div class="legend"><span><i class="swatch ward"></i>Ranh xã Vĩnh Thịnh</span><span><i class="swatch province"></i>Ranh tỉnh Gia Lai</span></div>
+</section>
+<div id="coords" class="coords">Lon: -- | Lat: --</div><div id="toast" class="toast"></div>
+<script>
+(() => {
+  'use strict';
+  const DEFAULT_TILE='https://gomaps.vnpt.vn/tiles/mapvnpt/v1/{z}/{x}/{y}.png';
+  const DEFAULT_KEY='e278c7b3-b64f-4487-831a-1896ea41a270';
+  const $=id=>document.getElementById(id);const toast=$('toast');
+  let toastTimer=null,wardLayer=null,provinceLayer=null,wardVisible=true,provinceVisible=true,baseLayer=null,tileErrors=0,fallbackUsed=false;
+  function notify(text){clearTimeout(toastTimer);toast.textContent=text;toast.className='toast show';toastTimer=setTimeout(()=>toast.className='toast',2200)}
+  if(!window.Vietflex){notify('Không tải được thư viện Vietflex.');return}
+  const map=Vietflex.vietflexMap('map',{center:[14.14127,108.81455],zoom:11,minZoom:4,maxZoom:22,zoomControl:false,attributionControl:false,googleMaps:false,preferCanvas:true});
+  new Vietflex.ZoomControl({position:'topright'}).addTo(map);
+  new Vietflex.AttributionControl({position:'bottomright',prefix:'<a href="https://github.com/Vietflexmap/VN" target="_blank" rel="noopener">Vietflex</a>'}).addTo(map);
+  function vnptUrl(){return DEFAULT_TILE+'?apiKey='+encodeURIComponent(DEFAULT_KEY)}
+  function makeVnptLayer(){return new Vietflex.TileLayer(vnptUrl(),{minZoom:0,maxZoom:20,maxNativeZoom:20,attribution:'VNPT GoMaps',updateWhenIdle:false,keepBuffer:4})}
+  function makeFallback(){return new Vietflex.TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'})}
+  function attachTileHealth(layer){tileErrors=0;layer.on('tileload',()=>{tileErrors=0});layer.on('tileerror',()=>{tileErrors++;if(tileErrors>=6&&!fallbackUsed){fallbackUsed=true;if(baseLayer&&map.hasLayer(baseLayer))map.removeLayer(baseLayer);baseLayer=makeFallback().addTo(map);notify('Đã chuyển sang nền OpenStreetMap dự phòng.')}})}
+  function setMode(mode){document.body.className='mode-'+mode;document.querySelectorAll('[data-mode]').forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===mode));fallbackUsed=false;tileErrors=0;if(baseLayer&&map.hasLayer(baseLayer))map.removeLayer(baseLayer);if(mode==='satellite'){baseLayer=Vietflex.legacyGoogleTiles({mapType:'satellite',maxZoom:22}).addTo(map);notify('Đã chuyển sang ảnh vệ tinh.')}else{baseLayer=makeVnptLayer();attachTileHealth(baseLayer);baseLayer.addTo(map)}if(provinceLayer)provinceLayer.bringToFront();if(wardLayer)wardLayer.bringToFront()}
+  function fmt(n,digits=0){return new Intl.NumberFormat('vi-VN',{maximumFractionDigits:digits}).format(n)}
+  function wardPopup(p){return `<b style="color:#b51d20">Xã ${p.ten_xa}</b><br>Sáp nhập: ${p.sap_nhap}<br>Diện tích: ${fmt(p.dtich_km2,2)} km²<br>Dân số: ${fmt(p.dan_so)} người<br>Mật độ: ${fmt(p.matdo_km2,2)} người/km²<br>Mã xã: ${p.ma_xa}`}
+  function provincePopup(p){return `<b style="color:#0d47a1">Tỉnh ${p.ten_tinh}</b><br>Sáp nhập: ${p.sap_nhap}<br>Quy mô: ${p.quy_mo}<br>UBND: ${p.tru_so}<br>Diện tích: ${fmt(p.dtich_km2,2)} km²<br>Dân số: ${fmt(p.dan_so)} người`}
+  async function loadBoundaries(){
+    try{
+      const [wardData,provinceData]=await Promise.all([
+        fetch('./data/vinh-thinh.geojson').then(r=>{if(!r.ok)throw new Error('Không tải được dữ liệu xã');return r.json()}),
+        fetch('./data/gia-lai.geojson').then(r=>{if(!r.ok)throw new Error('Không tải được dữ liệu tỉnh');return r.json()})
+      ]);
+      provinceLayer=new Vietflex.GeoJSON(provinceData,{style:{color:'#0d47a1',weight:3,opacity:.95,fillColor:'#ff5fa2',fillOpacity:.07,dashArray:'10 6'},onEachFeature:(feature,layer)=>{layer.bindPopup(provincePopup(feature.properties),{maxWidth:330});layer.bindTooltip(`Tỉnh ${feature.properties.ten_tinh}`,{sticky:true})}}).addTo(map);
+      wardLayer=new Vietflex.GeoJSON(wardData,{style:{color:'#d7191c',weight:4,opacity:1,fillColor:'#ffd54f',fillOpacity:.28},onEachFeature:(feature,layer)=>{layer.bindPopup(wardPopup(feature.properties),{maxWidth:330});layer.bindTooltip(`Xã ${feature.properties.ten_xa}`,{sticky:true});layer.on('pointerover',()=>layer.setStyle({weight:6,fillOpacity:.38}));layer.on('pointerout',()=>layer.setStyle({weight:4,fillOpacity:.28}))}}).addTo(map);
+      provinceLayer.bringToFront();wardLayer.bringToFront();
+      const labelIcon=new Vietflex.DivIcon({className:'',html:'<div class="district-label">XÃ VĨNH THỊNH</div>',iconSize:[110,28],iconAnchor:[55,14]});
+      new Vietflex.Marker([14.14210,108.83109],{icon:labelIcon,interactive:false}).addTo(map);
+      map.fitBounds(wardLayer.getBounds(),{padding:[55,55],maxZoom:13});notify('Đã tải ranh giới xã Vĩnh Thịnh và tỉnh Gia Lai.');
+    }catch(err){console.error(err);notify('Lỗi tải GeoJSON. Kiểm tra thư mục data/.')}
+  }
+  $('fitWard').addEventListener('click',()=>{if(wardLayer)map.fitBounds(wardLayer.getBounds(),{padding:[55,55],maxZoom:13})});
+  $('fitProvince').addEventListener('click',()=>{if(provinceLayer)map.fitBounds(provinceLayer.getBounds(),{padding:[42,42],maxZoom:9})});
+  $('toggleWard').addEventListener('click',e=>{if(!wardLayer)return;wardVisible=!wardVisible;wardVisible?map.addLayer(wardLayer):map.removeLayer(wardLayer);e.currentTarget.textContent=`Ranh xã ${wardVisible?'✓':'○'}`;if(wardVisible)wardLayer.bringToFront()});
+  $('toggleProvince').addEventListener('click',e=>{if(!provinceLayer)return;provinceVisible=!provinceVisible;provinceVisible?map.addLayer(provinceLayer):map.removeLayer(provinceLayer);e.currentTarget.textContent=`Ranh tỉnh ${provinceVisible?'✓':'○'}`;if(provinceVisible)provinceLayer.bringToFront();if(wardVisible&&wardLayer)wardLayer.bringToFront()});
+  document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>setMode(btn.dataset.mode)));
+  map.on('pointermove',e=>{$('coords').textContent=`Lon: ${e.latlng.lng.toFixed(6)} | Lat: ${e.latlng.lat.toFixed(6)}`});
+  setMode('standard');loadBoundaries();
+})();
+</script>
+</body>
+</html>
